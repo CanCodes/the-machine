@@ -15,7 +15,7 @@ The Machine has 16 general-purpose registers (0 to F)
 
 ## Memory
 
-This machine has a whopping 256 Bytes of memory! There are 256 cells in the memory and each of them hold can hold a byte (8-bits). They are numbered from 00 to FF (in hexadecimal)
+This machine has a whopping 512 Bytes of memory! There are 256 cells in the memory and each of them hold can hold two bytes (16-bits). They are numbered from 00 to FF (in hexadecimal)
 
 ## Machine Instructions
 
