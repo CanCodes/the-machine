@@ -147,7 +147,7 @@ def interpret_instruction(inststr):
         print(
             f"ADD register {format(x, '#x')} ({np.binary_repr(a, 8)}) to register {format(y, '#x')} ({np.binary_repr(b, 8)}) and save to register {format(r, '#x')} ({np.binary_repr(registers[r], 8)}) -> {np.int8(registers[r])})")
     elif opCode == 0x6:
-        print("No.")
+        print("Not implemented.")
     elif opCode == 0x7:
         a = registers[x]
         b = registers[y]
@@ -187,8 +187,19 @@ if __name__ == "__main__":
             if retval == 1:
                 break
 
-    if "--help" in sys.argv:
+    elif "--help" in sys.argv:
         print(VOLE_USAGE)
     else:
         source_file = sys.argv[1]
         print(f"Loading instructions from {source_file}")
+        content = ""
+
+        try:
+            file = open(source_file)
+            content = file.read()
+        except:
+            print(f"File '{source_file}' is missing or being used")
+        else:
+            lines = content.split()
+            for line in lines:
+                interpret_instruction(line)
