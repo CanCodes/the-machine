@@ -1,17 +1,123 @@
 import os
 import numpy as np
+import sys
 
 registers = [0x0] * 16
 memory = [0x00] * 256
+
+VOLE_USAGE = \
+"""
+python cpu.py [source]
+
+    [source] OPTIONAL
+      if empty
+          runs Vole REP
+      else
+          interprets the source file
+""" \
+.lstrip()
+
+VOLE_GREETING = \
+"""
+Welcome to Vole Machine Language REPL v1.1
+Type .help for instructions
+""" \
+.lstrip()
+
+VOLE_HELP = \
+"""
+.help    print help page
+.manual  read vole instructions manual
+.debug   enter debug mode
+.exit    exit vole REPL
+""" \
+.lstrip()
+
+VOLE_MANUAL = \
+"""
+Vole is a virtual machine language created for educational purposes.
+
+0x1 RXY LOAD the register R with the bit pattern found in the 
+memory cell whose address is XY.
+
+0x2 RXY LOAD the register R with the bit pattern XY.
+
+0x3 RXY STORE the bit pattern found in register R in the memory 
+cell whose address is XY.
+
+0x4 0RS MOVE the bit pattern found in register R to register S.
+
+0x5 RST ADD the bit patterns in registers S and T as though they 
+were two’s complement representations and leave the 
+result in register R.
+
+0x6 RST ADD the bit patterns in registers S and T as though they 
+represented values in floating-point notation and leave 
+the floating-point result in register R.
+
+0x7 RST OR the bit patterns in registers S and T and place the 
+result in register R.
+
+0x8 RST AND the bit patterns in registers S and T and place the 
+result in register R.
+
+0x9 RST XOR the bit patterns in registers S and T and place the 
+result in register R.
+
+0xA R0X ROTATE the bit pattern in register R one bit to the right 
+X times. Each time, place the bit that started at the low-
+order end at the high-order end.
+
+0xC 000 HALT execution.
+""" \
+.lstrip()
 
 
 def rotate(num: int, amount: int) -> int:
     sNum = format(num, "08b")
     return int(f"0b{sNum[-amount:] + sNum[:-amount]}", 2)
 
+def debug_tui():
+    os.system('clear' if os.name not in ("nt", "dos") else "cls")
+    while True:
+        controls = input(
+            " You've entered the visualization zone.\n"
+            "   Enter M to view the Memory zone.\n"
+            "   Enter R to view the Registers zone.\n"
+            "   Enter Q to quit the visualization zone.\n:"
+        )
+        if controls.lower() == "q":
+            os.system('clear' if os.name not in ("nt", "dos") else "cls")
+            break
+        elif controls.lower() == "m":
+            print(
+                "\n".join([f"{format(i, 'x').upper()}. {format(val, '#04x')}" for i, val in enumerate(memory)]))
+        elif controls.lower() == "r":
+            print(
+                "\n".join([f"{format(i, 'x').upper()}. {format(val, '#04x')}" for i, val in enumerate(registers)]))
 
-while True:
-    inst = int(input("Give me instruction: "), 16)
+def interpret_instruction(inststr):
+    inst = 0
+    inststr = inststr.strip()
+
+    if inststr == ".help":
+        print(VOLE_HELP)
+        return 0
+    if inststr == ".manual":
+        print(VOLE_MANUAL)
+        return 0
+    if inststr == ".debug":
+        debug_tui()
+        return 0
+    if inststr == ".exit":
+        return 1
+
+    try:
+        inst = int(inststr, 16)
+    except:
+        print(f"Bad instruction {inststr}")
+        return 0
+
     opCode = (inst & 0xF000) >> 12
     r = (inst & 0x0F00) >> 8
 
@@ -69,21 +175,20 @@ while True:
               "you can't jump to that memory cell.")
     elif opCode == 0xC:
         print("HALT")
-        break
-    elif opCode == 0xD:
+        return 1
+
+
+if __name__ == "__main__":
+    if len(sys.argv) == 1:
+        # Enter REPL mode
+        print(VOLE_GREETING)
         while True:
-            controls = input(
-                " You've entered the visualization zone.\n"
-                "   Enter M to view the Memory zone.\n"
-                "   Enter R to view the Registers zone.\n"
-                "   Enter Q to quit the visualization zone.\n:"
-            )
-            if controls.lower() == "q":
-                os.system('clear' if os.name not in ("nt", "dos") else "cls")
+            retval = interpret_instruction(input("vole> "))
+            if retval == 1:
                 break
-            elif controls.lower() == "m":
-                print(
-                    "\n".join([f"{format(i, 'x').upper()}. {format(val, '#04x')}" for i, val in enumerate(memory)]))
-            elif controls.lower() == "r":
-                print(
-                    "\n".join([f"{format(i, 'x').upper()}. {format(val, '#04x')}" for i, val in enumerate(registers)]))
+
+    if "--help" in sys.argv:
+        print(VOLE_USAGE)
+    else:
+        source_file = sys.argv[1]
+        print(f"Loading instructions from {source_file}")
