@@ -1,6 +1,6 @@
 # **Vole** instruction interpreter
 
-I've gone ahead and wrote the interpreter of the simple Vole architecture instruon set found in our book.
+I've gone ahead and wrote the interpreter of the simple Vole architecture instruction set found in our book.
 
 ## Usage
 
