@@ -27,9 +27,10 @@ After running the first method and getting presented with the Vole REPL, go ahea
 
 You will be offered following options,
 
-`.manual`, use this command to familiarize yourself with the Vole instruction set architecture.
-`.debug`, this will enter debug mode. You can inspect the registers and the memory as you like.
-`.exit`, exit REPL. Has the same functionality as the instruction `C000`, but included for constistency in the REPL ux.
+
+- `.manual`, use this command to familiarize yourself with the Vole instruction set architecture.
+- `.debug`, this will enter debug mode. You can inspect the registers and the memory as you like.
+- `.exit`, exit REPL. Has the same functionality as the instruction `C000`, but included for constistency in the REPL ux.
 
 ## Registers
 
